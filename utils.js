@@ -1,6 +1,6 @@
 'use strict';
 
-var nextTick;
+let nextTick;
 if (typeof setImmediate === 'function') {
   nextTick = setImmediate;
 } else if (typeof process === 'object' && process && process.nextTick) {

@@ -2,7 +2,7 @@
  * Created by panzhichao on 16/8/18.
  */
 'use strict';
-const decoder  = require('hessian.js').DecoderV2;
+const Decoder  = require('hessian.js').DecoderV2;
 const Response = {
   OK               : 20,
   CLIENT_TIMEOUT   : 30,
@@ -13,7 +13,7 @@ const Response = {
   SERVICE_ERROR    : 70,
   SERVER_ERROR     : 80,
   CLIENT_ERROR     : 90
-}
+};
 
 const RESPONSE_WITH_EXCEPTION = 0;
 const RESPONSE_VALUE          = 1;
@@ -26,7 +26,7 @@ function decode(heap, cb) {
     return cb(heap.slice(18, heap.length - 1).toString())
   }
   try {
-    result = new decoder(heap.slice(16, heap.length));
+    result = new Decoder(heap.slice(16, heap.length));
     flag   = result.readInt();
 
     switch (flag) {

@@ -4,7 +4,7 @@
 'use strict';
 
 const url = require('url');
-const os  = require('os');
+const os = require('os');
 
 const CREATE_MODES = {
   /**
@@ -32,7 +32,7 @@ const CREATE_MODES = {
 
 function isLoopback(addr) {
   return /^(::f{4}:)?127\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})/
-      .test(addr) ||
+    .test(addr) ||
     /^fe80::1$/.test(addr) ||
     /^::1$/.test(addr) ||
     /^::$/.test(addr);
@@ -40,36 +40,36 @@ function isLoopback(addr) {
 
 function ip() {
   const interfaces = os.networkInterfaces();
-  return Object.keys(interfaces).map(function (nic) {
-    const addresses = interfaces[nic].filter(function (details) {
-      return details.family.toLowerCase() === 'ipv4' && !isLoopback(details.address);
+  return Object.keys(interfaces).map(nic => {
+    const addresses = interfaces[nic].filter(({ family, address }) => {
+      return family.toLowerCase() === 'ipv4' && !isLoopback(address);
     });
     return addresses.length ? addresses[0].address : undefined;
   }).filter(Boolean)[0];
 }
 
 function consumer() {
-  const self  = this;
+  const self = this;
   const paths = [];
-  const host  = ip();
+  const host = ip();
 
   const dependencies = self.dependencies;
   let serv; //临时存储服务
 
   const info = {
     protocol: 'consumer',
-    slashes : 'true',
-    host    : '',
-    query   : {
+    slashes: 'true',
+    host: '',
+    query: {
       application: self.application.name,
-      category   : 'consumers',
-      check      : 'false',
-      dubbo      : self.dubboVer,
-      interface  : '',
-      revision   : '',
-      version    : '',
-      side       : 'consumer',
-      timestamp  : (new Date()).getTime()
+      category: 'consumers',
+      check: 'false',
+      dubbo: self.dubboVer,
+      interface: '',
+      revision: '',
+      version: '',
+      side: 'consumer',
+      timestamp: (new Date()).getTime()
     }
   };
 
@@ -80,8 +80,8 @@ function consumer() {
     info.host = `${host}/${serv.interface}`;
 
     info.query.interface = serv.interface;
-    info.query.revision  = serv.version;
-    info.query.version   = serv.version;
+    info.query.revision = serv.version;
+    info.query.version = serv.version;
     paths.push(`/dubbo/${serv.interface}/consumers/${encodeURIComponent(url.format(info))}`);
   }
 

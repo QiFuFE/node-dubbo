@@ -27,6 +27,7 @@
     "validateQuoteMarks": null
   },
   "devDependencies": {
-    "chai": "^3.4.1"
+    "chai": "^3.4.1",
+    "js-to-java": "^2.4.0"
   }
 }
