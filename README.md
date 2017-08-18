@@ -1,24 +1,39 @@
 # node-zookeeper-dubbo
-nodejs connect dubbo by default protocol in zookeeper
+nodejs通过dubbo默认协议通信
 
 [![NPM version][npm-image]][npm-url]
-[![Downloads][downloads-image]][npm-url]
 
 
 ### Usage
 
 ```javascript
 const nzd=require('node-zookeeper-dubbo');
-
+const app=require('express')();
 const opt={
   application:{name:'fxxk'},
   register:'www.cctv.com:2181',
   dubboVer:'2.5.3.6',
+  root:'dubbo',
   dependencies:{
-    Foo:{interface:'com.service.Foo',version:'LATEST',timeout:6000,group:'isis'},
-    Bar:{interface:'com.service.Bar',version:'LATEST',timeout:6000,group:'gcd'}
+    Foo:{
+      interface:'com.service.Foo',
+      version:'LATEST',
+      timeout:6000,
+      group:'isis',
+      methodSignature: {
+        findById = (id) => [ {'$class': 'java.lang.Long', '$': id} ],
+        findByName = (name) => (java) => [ java.String(name) ],
+  }  
+    },
+    Bar:{
+      interface:'com.service.Bar',
+      version:'LATEST',
+      timeout:6000,
+      group:'gcd'
+}
   }  
 }
+opt.java = require('js-to-java')
 
 const Dubbo=new nzd(opt);
 
@@ -31,36 +46,53 @@ const customerObj = {
   }
 };
 
+app.get('/foo',(req,res)=>{
 Dubbo.Foo
   .xxMethod({'$class': 'java.lang.Long', '$': '10000000'},customerObj)
-  .then(console.log)
-  .catch(console.error)
+    .then(data=>res.send(data))
+    .catch(err=>res.send(err))
+})
+
+app.get('/foo/findById',(req,res)=>{
+  Dubbo.Foo
+    .findById(10000)
+    .then(data=>res.send(data))
+    .catch(err=>res.send(err))
+})
+
+app.listen(9090)
+
+
 
 ```
 ### Notice
 
-**First** must wait the service init done before use it ,symbol is **Dubbo service init done**
+**首先** 必须等待初始化完毕才能正常使用 ,标志就是**Dubbo service init done**
 
-if you want coexistence between different versions,use [niv](https://github.com/scott113341/npm-install-version).
+如果要和1.x版本共存的话试试这个，[niv](https://github.com/scott113341/npm-install-version).
 
 ### Config
 #### application
 ###### name
-you application name
+项目名
 #### register
-zookeeper conn url
+zookeeper连接字符串
 #### dubboVer
-the dubbo version
+dubbo版本
+#### root
+注册到zk上的根节点，默认为dubbo
 #### dependencies
-the services you need to with
+依赖的服务列表
 ##### interface
-interface (optional)
+服务地址，必填
 ##### version
-version (optional)
+版本号，可选，默认2.5.3.6
 ##### timeout
-timeout (optional)
+超时时间，可选，默认6000
 ##### group
-group (optional)
+分组，可选
+##### methodSignature
+方法签名，可选
 
 
 
@@ -71,20 +103,6 @@ var arg1={$class:'int',$:123};
 //equivalent
 var arg1=java('int',123);
 ```
-
-### Optimize
-
-There are a lot of non-functional requirements need to be satisfied, but time is hard, so pls patience, we'll scare you.
-
-### Contributors
-[PanEW](https://github.com/p412726700)
-
-[zhanghua](https://github.com/zhanghua499)
-
-[caomu](https://github.com/caomu)
-
-[zhchj126](https://github.com/zhchj126)
-
 
 
 [npm-image]:http://img.shields.io/npm/v/node-zookeeper-dubbo.svg?style=flat-square

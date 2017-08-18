@@ -21,7 +21,14 @@ require('./utils');
 
 class NZD {
 
-  constructor({ dubboVer, application, register, root = 'dubbo', dependencies = {} }) {
+  constructor({
+                dubboVer,
+                application,
+                register,
+                root = 'dubbo',
+                dependencies = {}
+              }) {
+
     this.dubboVer = dubboVer;
     this.application = application;
     this.root = root;
@@ -35,7 +42,7 @@ class NZD {
     this.client.connect();
     this.client.once('connected', () => {
       Object.keys(dependencies).forEach(key => {
-        NZD.prototype[key] = new Service(this.client, this.dubboVer, dependencies[key], Object.keys(dependencies).length);
+        NZD.prototype[key] = new Service(this.client, this.dubboVer, dependencies[key], Object.keys(dependencies).length,this.root);
       });
       this._consumer();
     });

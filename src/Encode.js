@@ -33,6 +33,9 @@ class Encode {
     body.write(this._opt._interface);
     body.write(this._opt._version);
     body.write(this._opt._method);
+    if(this._opt._dver.split('.')[0] >= '2' && this._opt._dver.split('.')[1] >= '8'){
+      body.write(-1);  //for dubbox ^2.8.0
+    }
     body.write(Encode._argsType(args));
     if (args && args.length) {
       for (let i = 0, len = args.length; i < len; ++i) {
@@ -60,7 +63,9 @@ class Encode {
       type = args[i]['$class'];
 
       if (type.charAt(0) === '[') {
-        parameterTypes += '[L' + type.slice(1).replace(/\./gi, '/') + ';';
+        parameterTypes += ~type.indexOf('.')
+          ? '[L' + type.slice(1).replace(/\./gi, '/') + ';'
+          : '[' + typeRef[type.slice(1)];
       } else {
         parameterTypes += type && ~type.indexOf('.')
           ? 'L' + type.replace(/\./gi, '/') + ';'

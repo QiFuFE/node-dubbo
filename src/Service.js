@@ -8,12 +8,13 @@ let COUNT = 0;
 
 class Service {
 
-  constructor(zk, _dver = '2.5.3.6', { version, group, interface: interfaceC, timeout = 6000 }, serviceLength) {
+  constructor(zk, _dver = '2.5.3.6', { version, group, interface: interfaceC, timeout = 6000 },serviceLength,root) {
     this._zk = zk;
     this._hosts = [];
     this._version = version;
     this._group = group;
     this._interface = interfaceC;
+    this.root = root;
     this._serviceLength = serviceLength;
     this._encodeParam = {
       _dver,
@@ -28,7 +29,7 @@ class Service {
 
   _find(path, cb) {
     this._hosts = [];
-    this._zk.getChildren(`/dubbo/${path}/providers`, () => {
+    this._zk.getChildren(`/${this.root}/${path}/providers`, () => {
       this._find(path);
     }, (err, children) => {
       if (err) {
