@@ -23,14 +23,14 @@ const opt={
       methodSignature: {
         findById = (id) => [ {'$class': 'java.lang.Long', '$': id} ],
         findByName = (name) => (java) => [ java.String(name) ],
-  }  
+      }
     },
     Bar:{
       interface:'com.service.Bar',
       version:'LATEST',
       timeout:6000,
       group:'gcd'
-}
+    }
   }  
 }
 opt.java = require('js-to-java')
@@ -47,8 +47,8 @@ const customerObj = {
 };
 
 app.get('/foo',(req,res)=>{
-Dubbo.Foo
-  .xxMethod({'$class': 'java.lang.Long', '$': '10000000'},customerObj)
+  Dubbo.Foo
+    .xxMethod({'$class': 'java.lang.Long', '$': '10000000'},customerObj)
     .then(data=>res.send(data))
     .catch(err=>res.send(err))
 })
