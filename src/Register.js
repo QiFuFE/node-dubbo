@@ -41,9 +41,9 @@ function isLoopback(addr) {
 
 function ip() {
   const interfaces = os.networkInterfaces();
-  return Object.keys(interfaces).map(function (nic) {
-    const addresses = interfaces[nic].filter(function (details) {
-      return details.family.toLowerCase() === 'ipv4' && !isLoopback(details.address);
+  return Object.keys(interfaces).map(nic => {
+    const addresses = interfaces[nic].filter(({ family, address }) => {
+      return family.toLowerCase() === 'ipv4' && !isLoopback(address);
     });
     return addresses.length ? addresses[0].address : undefined;
   }).filter(Boolean)[0];
@@ -109,7 +109,7 @@ function consumer() {
     info.query.revision  = serv.version;
     info.query.version   = serv.version;
     info.query.group     = serv.group;
-    paths.push(`/${self._root}/${serv.interface}/consumers/${encodeURIComponent(url.format(info))}`);
+    paths.push(`/${this.root}/${serv.interface}/consumers/${encodeURIComponent(url.format(info))}`);
   }
 
   for (let i = 0, l = paths.length; i < l; i++) {
@@ -119,7 +119,7 @@ function consumer() {
       .then(function() {
         self.client.exists(path, function (err, stat) {
           if (err) {
-            console.error('Reg consumer failed:' + err.stack);
+          console.log(err.stack);
             return;
           }
 

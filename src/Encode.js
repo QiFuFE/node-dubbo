@@ -33,8 +33,8 @@ class Encode {
     body.write(this._opt._interface);
     body.write(this._opt._version);
     body.write(this._opt._method);
-    if(this._opt._dver.split('.')[0] >= '2' && this._opt._dver.split('.')[1] >= '8'){
-      body.write(-1);  //for dubbox ^2.8.0
+    if(this._opt._dver.startsWith('2.8')){
+      body.write(-1);  //for dubbox 2.8.X
     }
     body.write(Encode._argsType(args));
     if (args && args.length) {
