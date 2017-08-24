@@ -7,8 +7,9 @@
 const zookeeper = require('node-zookeeper-client');
 const reg = require('./src/Register');
 const Service = require('./src/Service');
+const EventEmitter = require('events');
 
-require('./utils');
+// require('./utils');
 
 // let SERVICE_LENGTH = 0;
 
@@ -21,17 +22,25 @@ require('./utils');
  * @constructor
  */
 
-class NZD {
+class NZD extends EventEmitter {
 
+  /**
+   * @param {Object} options 配置对象
+   *  @param {String} dubboVer
+   *  @param {Object} application
+   *  @param {String} register
+   *  @param {String} group
+   *  @param {String} root
+   * @param {Object} dependencies
+   */
   constructor({
-                dubboVer,
+                dubboVer = '2.5.3',
                 application,
                 register,
                 group,
                 root = 'dubbo',
-                dependencies = {}
-              }) {
-
+              }, dependencies = {}) {
+    super();
     this.dubboVer = dubboVer;
     this.application = application;
     this.group = group;
@@ -45,7 +54,7 @@ class NZD {
     this.client.connect();
     this.client.once('connected', () => {
       Object.keys(dependencies).forEach(key => {
-        NZD.prototype[key] = new Service(this.client, this.dubboVer, dependencies[key], Object.keys(dependencies).length, this.root);
+        NZD.prototype[key] = new Service(this, dependencies[key], Object.keys(dependencies).length);
       });
       this._consumer();
     });

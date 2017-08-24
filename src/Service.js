@@ -9,26 +9,27 @@ let COUNT = 0;
 
 class Service {
 
-  constructor(zk, _dver = '2.5.3.6', {
+  constructor(nzd, {
                 version,
                 group, interface: interfaceC, methodSignature = {}, timeout = 6000
               },
-              serviceLength, root) {
-    this._zk = zk;
+              serviceLength) {
+    this._zk = nzd.client;
     this._hosts = [];
     this._version = version;
     this._group = group;
     this._interface = interfaceC;
     this._signature = methodSignature;
-    this.root = root;
+    this.root = nzd.root;
     this._serviceLength = serviceLength;
     this._encodeParam = {
-      _dver,
+      _dver: nzd.dubboVer,
       _interface: interfaceC,
       _version: version,
       _group: group,
       _timeout: timeout
     };
+    this.nzd = nzd;
 
     this._find(interfaceC);
   }
@@ -74,6 +75,7 @@ class Service {
         return cb();
       }
       if (++COUNT === this._serviceLength) {
+        this.nzd.emit('init-done', this._serviceLength);
         console.log('\x1b[32m%s\x1b[0m', 'Dubbo service init done');
       }
     });
@@ -118,14 +120,13 @@ class Service {
       })
       .on('close', err => {
         if (!err) {
-          decode(heap, (err, result) => {
-            if (err) {
-              return reject(err);
-            }
-            return resolve(result);
-          })
+          try {
+            const result = decode(heap);
+            resolve(result);
+          } catch (e) {
+            reject(e);
+          }
         }
-
       });
     });
   }

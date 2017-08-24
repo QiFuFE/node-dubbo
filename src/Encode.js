@@ -13,12 +13,20 @@ class Encode {
     return Buffer.concat([head, body]);
   }
 
+  /**
+   * 构造 dubbo 传输协议中的 head 部分
+   * @param len 报文体具体数据的长度
+   * @return {Buffer} head 部分的 Buffer 实例
+   * @private
+   */
   static _head(len) {
+    //构造 16 字节的协议头部, 0xda, 0xbb 为协议魔数
     const head = [0xda, 0xbb, 0xc2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     let i = 15;
     if (len > DEFAULT_LEN) {
       throw new Error(`Data length too large: ${len}, max payload: ${DEFAULT_LEN}`);
     }
+    //填充至协议头部后4个字节.
     while (len >= 256) {
       head.splice(i--, 1, len % 256);
       len >>= 8;
@@ -27,6 +35,13 @@ class Encode {
     return new Buffer(head);
   }
 
+  /**
+   *
+   * @param method
+   * @param args
+   * @return {Buffer|Array.<T>|string}
+   * @private
+   */
   _body(method, args) {
     const body = new Encoder();
     body.write(this._opt._dver || '2.5.3.6');
