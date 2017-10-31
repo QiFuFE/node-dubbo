@@ -9,11 +9,6 @@ const buffer = new Encoder({
   _version: '1.0.0',
   _args: [
     java('com.test.Object', { foo: 'bar' }),
-    java('com.test.Object', { foo: 'bar' }),
-    java('com.test.Object', { foo: 'bar' }),
-    java('com.test.Object', { foo: 'bar' }),
-    java('com.test.Object', { foo: 'bar' }),
-    java('com.test.Object', { foo: 'bar' }),
   ]
 });
 

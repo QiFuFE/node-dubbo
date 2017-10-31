@@ -1,13 +1,13 @@
 const NZD = require('../index');
-const { String: jString, int: jInt } = require('js-to-java');
+const { String: jString, int: jInt,Long:jLong } = require('js-to-java');
 
 const dependencies = {
   Customer: {
-    interface: 'com.qf58.crm.extend.module.service.CustomerService',
-    version: '1.0.0',
+    interface: 'com.qf58.crm.extend.module.service.ClueService',
+    version: '0.1.3',
     timeout: 6000,
     methodSignature: {
-      getCustomerByName: (name) => [jString(name)],
+      getClueById: (id) => [jLong(id)],
     },
   },
 };
@@ -23,7 +23,7 @@ const Dubbo = new NZD({
   console.log(this);
   console.log(serviceLen);
   try {
-    console.log(await Dubbo.Customer.getCustomerByName('822'));
+    console.log(await Dubbo.Customer.getClueById('822'));
   } catch (e) {
     console.error(e);
   }
