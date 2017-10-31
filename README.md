@@ -10,7 +10,7 @@ const app=require('express')();
 const opt={
   application:{name:'fxxk'},
   register:'www.cctv.com:2181',
-  dubboVer:'2.5.3.6',
+  dubboVersion:'2.5.3.6',
   root:'dubbo',
   dependencies:{
     Foo:{
@@ -73,7 +73,7 @@ app.listen(9090)
 - **application**
   * name - 项目名称，必填
 - **register** - zookeeper服务地址，必填
-- **dubboVer** - dubbo版本，必填
+- **dubboVersion** - dubbo版本，必填
 - **root** - 注册到zookeeper上的根节点名称
 - **dependencies** - 依赖的服务集，必填
   * Foo - 自定义名称，这里方便起见用Foo作为事例，必填

@@ -2,6 +2,24 @@
 # yarn lockfile v1
 
 
+"@types/debug@0.0.30":
+  version "0.0.30"
+  resolved "http://registry.npm.taobao.org/@types/debug/download/@types/debug-0.0.30.tgz#dc1e40f7af3b9c815013a7860e6252f6352a84df"
+
+"@types/js-to-java@2.4.0":
+  version "2.4.0"
+  resolved "http://registry.npm.taobao.org/@types/js-to-java/download/@types/js-to-java-2.4.0.tgz#d040564f62177937957329f5626cb7a40acf97f3"
+
+"@types/node-zookeeper-client@0.2.4":
+  version "0.2.4"
+  resolved "http://registry.npm.taobao.org/@types/node-zookeeper-client/download/@types/node-zookeeper-client-0.2.4.tgz#cf390147f245acd768c382cc431549f052bc2e2c"
+  dependencies:
+    "@types/node" "*"
+
+"@types/node@*", "@types/node@8.0.47":
+  version "8.0.47"
+  resolved "http://registry.npm.taobao.org/@types/node/download/@types/node-8.0.47.tgz#968e596f91acd59069054558a00708c445ca30c2"
+
 assertion-error@^1.0.1:
   version "1.0.2"
   resolved "http://registry.npm.taobao.org/assertion-error/download/assertion-error-1.0.2.tgz#13ca515d86206da0bac66e834dd397d87581094c"
@@ -33,6 +51,12 @@ copy-to@~2.0.1:
 core-util-is@^1.0.2:
   version "1.0.2"
   resolved "http://registry.npm.taobao.org/core-util-is/download/core-util-is-1.0.2.tgz#b5fd54220aa2bc5ab57aab7140c940754503c1a7"
+
+debug@3.1.0:
+  version "3.1.0"
+  resolved "http://registry.npm.taobao.org/debug/download/debug-3.1.0.tgz#5bb5a0672628b64149566ba16819e61518c67261"
+  dependencies:
+    ms "2.0.0"
 
 debug@^2.6.6, debug@^2.6.8:
   version "2.6.8"
@@ -95,6 +119,20 @@ node-zookeeper-client@0.2.2:
     async "~0.2.7"
     underscore "~1.4.4"
 
+source-map-support@0.5.0:
+  version "0.5.0"
+  resolved "http://registry.npm.taobao.org/source-map-support/download/source-map-support-0.5.0.tgz#2018a7ad2bdf8faf2691e5fddab26bed5a2bacab"
+  dependencies:
+    source-map "^0.6.0"
+
+source-map@^0.6.0:
+  version "0.6.1"
+  resolved "http://registry.npm.taobao.org/source-map/download/source-map-0.6.1.tgz#74722af32e9614e9c287a8d0bbde48b5e2f1a263"
+
+tslib@1.8.0:
+  version "1.8.0"
+  resolved "http://registry.npm.taobao.org/tslib/download/tslib-1.8.0.tgz#dc604ebad64bcbf696d613da6c954aa0e7ea1eb6"
+
 type-detect@0.1.1:
   version "0.1.1"
   resolved "http://registry.npm.taobao.org/type-detect/download/type-detect-0.1.1.tgz#0ba5ec2a885640e470ea4e8505971900dac58822"
@@ -102,6 +140,10 @@ type-detect@0.1.1:
 type-detect@^1.0.0:
   version "1.0.0"
   resolved "http://registry.npm.taobao.org/type-detect/download/type-detect-1.0.0.tgz#762217cc06db258ec48908a1298e8b95121e8ea2"
+
+typescript@2.5.3:
+  version "2.5.3"
+  resolved "http://registry.npm.taobao.org/typescript/download/typescript-2.5.3.tgz#df3dcdc38f3beb800d4bc322646b04a3f6ca7f0d"
 
 underscore@~1.4.4:
   version "1.4.4"

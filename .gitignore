@@ -189,3 +189,7 @@ Temporary Items
 .svn/
 
 # Created by .ignore support plugin (hsz.mobi)
+
+index.js
+src/**/*.js
+test/**/*.js
