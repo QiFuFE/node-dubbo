@@ -24,7 +24,8 @@
   "include": [
     "index.*",
     "src/**.ts",
-    "test/**.ts"
+    "test/**.ts",
+    "test/**/*.ts"
   ],
   "exclude": [
   ]

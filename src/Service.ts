@@ -1,11 +1,11 @@
 import * as debugFactory from 'debug';
-import * as net from 'net';
 import * as url from 'url';
 import * as qs from 'querystring';
-import decode from './Decode';
-import Encode from './Encode';
 import * as Java from 'js-to-java';
 import {Client} from "node-zookeeper-client";
+import {Socket} from "net";
+import EasySock from './EasySock';
+// import {promisify} from "util";
 
 
 let COUNT = 0;
@@ -13,7 +13,7 @@ let COUNT = 0;
 const debug = debugFactory('node-zookeeper-dubbo:service');
 
 export default class Service {
-
+    private connectionManager: EasySock;
     private zk: Client;
     private hosts: Array<string>;
     private version: string = '*';
@@ -25,6 +25,7 @@ export default class Service {
     private encodeParam: { _dver: any; _interface: any; _version: any; _group: any; _timeout: any };
     private nzd: any;
 
+    private static sock = Symbol('sock');
 
     constructor(nzd, {
                     version,
@@ -52,6 +53,12 @@ export default class Service {
         this.nzd = nzd;
 
         this.find(interfaceC);
+        this.connectionManager = new EasySock({
+            keepAlive: true,
+            encoder: null,
+            decoder: null,
+            timeout: 3000
+        });
     }
 
     private find(path, cb?: () => void) {
@@ -107,50 +114,79 @@ export default class Service {
     }
 
     private _flush(cb) {
-        this.find(this.interface, cb)
+        this.find(this.interface, cb);
     }
 
-    private _execute(method, args) {
-        const encode = new Encode({...this.encodeParam, _args: args, _method: method});
-        debug(JSON.stringify(this.encodeParam, null, 4));
-        return new Promise((resolve, reject) => {
-            const client = new net.Socket();
-            let host = this.hosts[Math.random() * this.hosts.length | 0].split(':');
-            const chunks = [];
-            let heap;
-            let bl = 16;
 
-            let port = Number.parseInt(host[1], 10);
-            client.connect(port, host[0], () => client.write(encode.data))
-                .on('error', async err => {
-                    console.log(err);
-                    this._flush(() => {
-                        host = this.hosts[Math.random() * this.hosts.length | 0].split(':');
-                        client.connect(port, host[0], () => client.write(encode.data));
-                    })
-                })
-                .on('data', chunk => {
-                    if (!chunks.length) {
-                        const arr = Array.prototype.slice.call(chunk.slice(0, 16));
-                        let i = 0;
-                        while (i < 3) {
-                            bl += arr.pop() * Math.pow(256, i++);
-                        }
-                    }
-                    chunks.push(chunk);
-                    heap = Buffer.concat(chunks);
-                    (heap.length >= bl) && client.destroy();
-                })
-                .on('close', err => {
-                    if (!err) {
-                        try {
-                            const result = decode(heap);
-                            resolve(result);
-                        } catch (e) {
-                            reject(e);
-                        }
-                    }
-                });
+    private getRandomServer(): [string, number] {
+        if (!this.hosts.length) {
+            throw new Error('now more server available!');
+        }
+        let [host, port] = this.hosts[Math.random() * this.hosts.length | 0].split(':');
+        return [host, Number.parseInt(port, 10)];
+    }
+
+    getConnection(): Promise<Socket> {
+        if (this[Service.sock] && (this[Service.sock] as Socket).connecting) {
+            return Promise.resolve(this[Service.sock]);
+        }
+
+        const client = new Socket();
+        let [host, port] = this.getRandomServer();
+        return new Promise((resolve, reject) => {
+            client.connect(port, host)
+                .on('connect', () => resolve(client))
+                .on('error', reject);
         });
+    }
+
+    private async _execute(method, paylords) {
+        // const encode = new Encode({...this.encodeParam, _args: paylords, _method: method});
+        debug(JSON.stringify(this.encodeParam, null, 4));
+        let [host, port] = this.getRandomServer();
+        return this.connectionManager.write(host, port, {
+                ...this.encodeParam,
+                _args: paylords,
+                _method: method
+            },
+        );
+        // new Promise((resolve, reject) => {
+        //     const client = new net.Socket();
+        //     let [host, port] = this.getRandomServer();
+        //     const chunks = [];
+        //     let heap;
+        //     let bl = 16;
+        //
+        //     client.connect(port, host, () => client.write(encode.data))
+        //         .on('error', async err => {
+        //             console.log(err);
+        //             this._flush(() => {
+        //                 let [host, port] = this.getRandomServer();
+        //                 client.connect(port, host, () => client.write(encode.data));
+        //             })
+        //         })
+        //         .on('data', chunk => {
+        //             if (!chunks.length) {
+        //                 const arr = Array.prototype.slice.call(chunk.slice(0, 16));
+        //                 let i = 0;
+        //                 while (i < 3) {
+        //                     bl += arr.pop() * Math.pow(256, i++);
+        //                 }
+        //             }
+        //             chunks.push(chunk);
+        //             heap = Buffer.concat(chunks);
+        //             (heap.length >= bl) && client.destroy();
+        //         })
+        //         .on('close', err => {
+        //             if (!err) {
+        //                 try {
+        //                     const result = decode(heap);
+        //                     resolve(result);
+        //                 } catch (e) {
+        //                     reject(e);
+        //                 }
+        //             }
+        //         });
+        // });
     }
 }

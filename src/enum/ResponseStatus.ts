@@ -1,4 +1,4 @@
-enum Response {
+enum ResponseStatus {
     OK = 20,
     CLIENT_TIMEOUT = 30,
     SERVER_TIMEOUT = 31,
@@ -10,4 +10,4 @@ enum Response {
     CLIENT_ERROR = 90
 }
 
-export default Response;
+export default ResponseStatus;
