@@ -61,6 +61,7 @@ export default class ExBuffer extends EventEmitter {
         //buf.copy(targetBuffer, [targetStart], [sourceStart], [sourceEnd])
         //当前缓冲区已经不能满足次数数据了
         if (len + this.getLen() > this.bufferStack.length) {
+            //todo : 考虑使用 socket.pause && socket.resume 控制接收速度. 防止缓存数据扩张太快.
             const ex = Math.ceil((len + this.getLen()) / (1024));//每次扩展1kb
             const tmp = Buffer.alloc(ex * 1024);
             const exlen = tmp.length - this.bufferStack.length;

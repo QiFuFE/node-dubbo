@@ -47,7 +47,7 @@ export default class DubboEncoder {
      * @private
      */
     static _head(msgId: number, len: number) {
-        //构造 16 字节的协议头部, 0xda, 0xbb 为协议魔数
+        //构造 16 字节的协议头部, 0xda, 0xbb 为协议魔数, 第三个字节 0b11000010
         const headBuf = Buffer.from([0xda, 0xbb, 0xc2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
         if (len > DEFAULT_LEN) {
             throw new Error(`Data length too large: ${len}, max payload: ${DEFAULT_LEN}`);

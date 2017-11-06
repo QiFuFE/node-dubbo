@@ -1,8 +1,6 @@
 /**
  * @description Rpc Client
  */
-
-
 'use strict';
 import * as debugFac from 'debug';
 import {SocketEvent} from "./enum/SocketEvent";
