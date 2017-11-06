@@ -149,15 +149,9 @@ debug@3.1.0:
   dependencies:
     ms "2.0.0"
 
-debug@^2.2.0:
+debug@^2.2.0, debug@^2.6.6, debug@^2.6.8:
   version "2.6.9"
   resolved "http://registry.npm.taobao.org/debug/download/debug-2.6.9.tgz#5d128515df134ff327e90a4c93f4e077a536341f"
-  dependencies:
-    ms "2.0.0"
-
-debug@^2.6.6, debug@^2.6.8:
-  version "2.6.8"
-  resolved "http://registry.npm.taobao.org/debug/download/debug-2.6.8.tgz#e731531ca2ede27d188222427da17821d68ff4fc"
   dependencies:
     ms "2.0.0"
 
@@ -236,8 +230,8 @@ he@^1.1.0:
   resolved "http://registry.npm.taobao.org/he/download/he-1.1.1.tgz#93410fd21b009735151f8868c2f271f3427e23fd"
 
 hessian.js@^2.1.8:
-  version "2.4.0"
-  resolved "http://registry.npm.taobao.org/hessian.js/download/hessian.js-2.4.0.tgz#b1d136607c881d37e866c3bdd51efb30160b2fc4"
+  version "2.5.0"
+  resolved "http://registry.npm.taobao.org/hessian.js/download/hessian.js-2.5.0.tgz#da18f63c8d1702e3f6d28a1135744dd1421e77fe"
   dependencies:
     byte "^1.1.6"
     debug "^2.6.8"
@@ -338,11 +332,21 @@ minimatch@^3.0.4:
   dependencies:
     brace-expansion "^1.1.7"
 
+minimist@0.0.8:
+  version "0.0.8"
+  resolved "http://registry.npm.taobao.org/minimist/download/minimist-0.0.8.tgz#857fcabfc3397d2625b8228262e86aa7a011b05d"
+
+mkdirp@~0.5.1:
+  version "0.5.1"
+  resolved "http://registry.npm.taobao.org/mkdirp/download/mkdirp-0.5.1.tgz#30057438eac6cf7f8c4767f38648d6697d75c903"
+  dependencies:
+    minimist "0.0.8"
+
 ms@2.0.0:
   version "2.0.0"
   resolved "http://registry.npm.taobao.org/ms/download/ms-2.0.0.tgz#5608aeadfc00be6c2901df5f9861788de0d597c8"
 
-mz@^2.4.0:
+mz@^2.4.0, mz@~2.7.0:
   version "2.7.0"
   resolved "http://registry.npm.taobao.org/mz/download/mz-2.7.0.tgz#95008057a56cafadc2bc63dde7f9ff6955948e32"
   dependencies:
@@ -533,20 +537,22 @@ type-detect@^1.0.0:
   version "1.0.0"
   resolved "http://registry.npm.taobao.org/type-detect/download/type-detect-1.0.0.tgz#762217cc06db258ec48908a1298e8b95121e8ea2"
 
-typescript@2.5.3:
-  version "2.5.3"
-  resolved "http://registry.npm.taobao.org/typescript/download/typescript-2.5.3.tgz#df3dcdc38f3beb800d4bc322646b04a3f6ca7f0d"
+typescript@2.6:
+  version "2.6.1"
+  resolved "http://registry.npm.taobao.org/typescript/download/typescript-2.6.1.tgz#ef39cdea27abac0b500242d6726ab90e0c846631"
 
 underscore@~1.4.4:
   version "1.4.4"
   resolved "http://registry.npm.taobao.org/underscore/download/underscore-1.4.4.tgz#61a6a32010622afa07963bf325203cf12239d604"
 
 utility@^1.12.0:
-  version "1.12.0"
-  resolved "http://registry.npm.taobao.org/utility/download/utility-1.12.0.tgz#bd69307863a3884ee58821251215b9872fb84058"
+  version "1.13.1"
+  resolved "http://registry.npm.taobao.org/utility/download/utility-1.13.1.tgz#9d72e145e49e4c5a21f2c307b0baf575235023f4"
   dependencies:
     copy-to "~2.0.1"
     escape-html "~1.0.3"
+    mkdirp "~0.5.1"
+    mz "~2.7.0"
 
 validate-npm-package-license@^3.0.1:
   version "3.0.1"

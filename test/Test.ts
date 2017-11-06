@@ -13,6 +13,7 @@ const dependencies = {
     },
 };
 
+
 // opt.java = require('js-to-java');
 
 const Dubbo = new NZD({
@@ -21,12 +22,14 @@ const Dubbo = new NZD({
     dubboVersion: '2.5.3',
     root: 'beta-a',
 }, dependencies)
-    .on('init-done', async serviceLen => {
-        console.log(this);
-        console.log(serviceLen);
+    .on('init-done', async () => {
         try {
-            console.log(await Dubbo.Customer.getClueById('10002'));
+            for (let i = 0; i < 100; i+=2) {
+                await (async () => {
+                    await Dubbo.Customer.getClueById((10000 + i).toString());
+                })()
+            }
         } catch (e) {
-            console.error(e);
+            console.trace('');
         }
     });

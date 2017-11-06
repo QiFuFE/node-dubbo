@@ -22,10 +22,10 @@ function isLoopback(addr) {
 function ip() {
     const interfaces = os.networkInterfaces();
     return Object.keys(interfaces).map(nic => {
-        const addresses = interfaces[nic].filter(({family, address}) => {
+        const addr = interfaces[nic].find(({family, address}) => {
             return family.toLowerCase() === 'ipv4' && !isLoopback(address);
         });
-        return addresses.length ? addresses[0].address : undefined;
+        return addr ? addr.address : null;
     }).filter(Boolean)[0];
 }
 

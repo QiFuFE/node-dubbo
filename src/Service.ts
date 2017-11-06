@@ -1,33 +1,38 @@
-import * as debugFactory from 'debug';
+// import * as debugFactory from 'debug';
 import * as url from 'url';
 import * as qs from 'querystring';
 import * as Java from 'js-to-java';
 import {Client} from "node-zookeeper-client";
 import {Socket} from "net";
-import EasySock from './EasySock';
+import RpcClient from './RpcClient';
+import DubboEncoder from "./codec/DubboEncoder";
+import DubboDecode from './codec/DubboDecode';
+import NZD from "../index";
 // import {promisify} from "util";
 
 
 let COUNT = 0;
 
-const debug = debugFactory('node-zookeeper-dubbo:service');
+// const debug = debugFactory('node-zookeeper-dubbo:service');
 
 export default class Service {
-    private connectionManager: EasySock;
+    private rpcClient: RpcClient;
     private zk: Client;
     private hosts: Array<string>;
-    private version: string = '*';
+    version: string = '*';
     private group: string;
     private interface: any;
     private signature: any;
     private root: string;
     private serviceLength: any;
-    private encodeParam: { _dver: any; _interface: any; _version: any; _group: any; _timeout: any };
+    // private encodeParam: { _dver: any; _interface: any; _version: any; _group: any; _timeout: any };
     private nzd: any;
 
     private static sock = Symbol('sock');
 
-    constructor(nzd, {
+    // private timeout: number;
+
+    constructor(nzd: NZD, {
                     version,
                     group,
                     interface: interfaceC,
@@ -43,20 +48,26 @@ export default class Service {
         this.signature = methodSignature;
         this.root = nzd.root;
         this.serviceLength = serviceLength;
-        this.encodeParam = {
-            _dver: nzd.dubboVersion,
-            _interface: interfaceC,
-            _version: version,
-            _group: group,
-            _timeout: timeout
-        };
+        // this.encodeParam = {
+        //     _dver: nzd.dubboVersion,
+        //     _interface: interfaceC,
+        //     _version: version,
+        //     _group: group,
+        //     _timeout: timeout
+        // };
+        // this.timeout = timeout;
         this.nzd = nzd;
 
         this.find(interfaceC);
-        this.connectionManager = new EasySock({
+        this.rpcClient = new RpcClient({
             keepAlive: true,
-            encoder: null,
-            decoder: null,
+            encoder: new DubboEncoder({
+                dubboVersion: nzd.dubboVersion,
+                version,
+                group,
+                timeout,
+            }),
+            decode: DubboDecode,
             timeout: 3000
         });
     }
@@ -113,7 +124,7 @@ export default class Service {
 
     }
 
-    private _flush(cb) {
+    _flush(cb) {
         this.find(this.interface, cb);
     }
 
@@ -142,12 +153,12 @@ export default class Service {
 
     private async _execute(method, paylords) {
         // const encode = new Encode({...this.encodeParam, _args: paylords, _method: method});
-        debug(JSON.stringify(this.encodeParam, null, 4));
+        // debug(JSON.stringify(this.encodeParam, null, 4));
         let [host, port] = this.getRandomServer();
-        return this.connectionManager.write(host, port, {
-                ...this.encodeParam,
-                _args: paylords,
-                _method: method
+        return this.rpcClient.invoke(host, port, paylords, {
+                _interface: this.interface,
+                version: this.version,
+                method,
             },
         );
         // new Promise((resolve, reject) => {

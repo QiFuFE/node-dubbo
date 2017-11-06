@@ -1,7 +1,7 @@
 {
   "compileOnSave": true,
   "compilerOptions": {
-    "target": "es2017",
+    "target": "esnext",
     "module": "commonjs",
     "noImplicitAny": false,
     "experimentalDecorators": true,
@@ -19,7 +19,7 @@
     "skipDefaultLibCheck": true,
     "inlineSourceMap": true,
     "importHelpers": true,
-    "locale": "zh-cn"
+    "locale": "zh-CN"
   },
   "include": [
     "index.*",
