@@ -9,6 +9,7 @@ import DubboEncoder, {CallMethodOpts} from "./codec/DubboEncoder";
 import {DecodeError} from "./error/DecodeError";
 import {JavaExceptionError} from 'hessian.js/lib/object';
 import RpcError from "./error/RpcError";
+import DubboDecode from './codec/DubboDecode';
 
 const debug = debugFac('node-zookeeper-dubbo:RpcClient');
 
@@ -30,7 +31,7 @@ interface InitOptions {
     encoder: DubboEncoder;
 }
 
-export default class RpcClient {
+export class RpcClient {
 
     /**
      * 并发请求时的会话标识
@@ -343,3 +344,24 @@ export default class RpcClient {
     //     }
     // }
 }
+
+let rpcClient = null;
+
+export default function getRpcClient(dubboVersion, version, group, timeout) {
+    if (rpcClient) {
+        return rpcClient;
+    }
+
+    return rpcClient = new RpcClient({
+        keepAlive: true,
+        encoder: new DubboEncoder({
+            dubboVersion,
+            version,
+            group,
+            timeout,
+        }),
+        decode: DubboDecode,
+        timeout: 3000
+    });
+}
+

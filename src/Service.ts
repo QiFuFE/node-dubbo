@@ -3,10 +3,7 @@ import * as url from 'url';
 import * as qs from 'querystring';
 import * as Java from 'js-to-java';
 import {Client} from "node-zookeeper-client";
-import {Socket} from "net";
-import RpcClient from './RpcClient';
-import DubboEncoder from "./codec/DubboEncoder";
-import DubboDecode from './codec/DubboDecode';
+import getRpcClient, {RpcClient} from './RpcClient';
 import NZD from "../index";
 // import {promisify} from "util";
 
@@ -28,9 +25,7 @@ export default class Service {
     // private encodeParam: { _dver: any; _interface: any; _version: any; _group: any; _timeout: any };
     private nzd: any;
 
-    private static sock = Symbol('sock');
-
-    // private timeout: number;
+    // private static sock = Symbol('sock');
 
     constructor(nzd: NZD, {
                     version,
@@ -59,18 +54,20 @@ export default class Service {
         this.nzd = nzd;
 
         this.find(interfaceC);
-        this.rpcClient = new RpcClient({
-            keepAlive: true,
-            encoder: new DubboEncoder({
-                dubboVersion: nzd.dubboVersion,
-                version,
-                group,
-                timeout,
-            }),
-            decode: DubboDecode,
-            timeout: 3000
-        });
+        this.rpcClient = getRpcClient(nzd.dubboVersion, version, group, timeout);
+        // this.rpcClient = new RpcClient({
+        //     keepAlive: true,
+        //     encoder: new DubboEncoder({
+        //         dubboVersion: nzd.dubboVersion,
+        //         version,
+        //         group,
+        //         timeout,
+        //     }),
+        //     decode: DubboDecode,
+        //     timeout: 3000
+        // });
     }
+
 
     private find(path, cb?: () => void) {
         this.hosts = [];
@@ -137,19 +134,19 @@ export default class Service {
         return [host, Number.parseInt(port, 10)];
     }
 
-    getConnection(): Promise<Socket> {
-        if (this[Service.sock] && (this[Service.sock] as Socket).connecting) {
-            return Promise.resolve(this[Service.sock]);
-        }
-
-        const client = new Socket();
-        let [host, port] = this.getRandomServer();
-        return new Promise((resolve, reject) => {
-            client.connect(port, host)
-                .on('connect', () => resolve(client))
-                .on('error', reject);
-        });
-    }
+    // getConnection(): Promise<Socket> {
+    //     if (this[Service.sock] && (this[Service.sock] as Socket).connecting) {
+    //         return Promise.resolve(this[Service.sock]);
+    //     }
+    //
+    //     const client = new Socket();
+    //     let [host, port] = this.getRandomServer();
+    //     return new Promise((resolve, reject) => {
+    //         client.connect(port, host)
+    //             .on('connect', () => resolve(client))
+    //             .on('error', reject);
+    //     });
+    // }
 
     private async _execute(method, paylords) {
         // const encode = new Encode({...this.encodeParam, _args: paylords, _method: method});
@@ -199,5 +196,9 @@ export default class Service {
         //             }
         //         });
         // });
+    }
+
+    static getInstance(Cls){
+        return new Cls();
     }
 }

@@ -12,7 +12,6 @@ import Service from './src/Service';
 
 // let SERVICE_LENGTH = 0;
 
-
 /**
  * @param {Object} opt {conn:'zk.dev.pajkdc.com:2181',
  * dubbo:{version:PZC,

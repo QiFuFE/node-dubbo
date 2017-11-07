@@ -1,8 +1,6 @@
 /**
  * Created by panzhichao on 16/6/30.
  */
-
-
 'use strict';
 import {format, UrlObject} from 'url';
 import * as os from 'os';

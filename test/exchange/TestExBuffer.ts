@@ -1,5 +1,5 @@
 /*************************基本操作****************************/
-import ExBuffer from "../../src/ExBuffer";
+import ExBuffer from "../../src/socket/ExBuffer";
 
 //构造一个ExBuffer，采用4个字节（uint32无符号整型）表示包长，而且是little endian 字节序
 // var exBuffer = new ExBuffer().uint32Head().littleEndian();
@@ -23,14 +23,14 @@ import ExBuffer from "../../src/ExBuffer";
 
 
 //大数据处理测试 (20MB)
-var exBuffer = ExBuffer.uint32Head();
+var exBuffer = new ExBuffer();
 exBuffer.on('data', function (buffer) {
     console.log('>> receive data,length:' + buffer.length);
     console.log(buffer);
 });
 var sbuf = new Buffer(4);
 sbuf.writeUInt32BE(50, 0);//写入包长
-exBuffer.put(Buffer.concat([sbuf,Buffer.alloc(50)]));
+exBuffer.put(Buffer.concat([sbuf, Buffer.alloc(50)]));
 
 
 /*************************在socket中的应用****************************/

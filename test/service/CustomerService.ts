@@ -1,11 +1,8 @@
-// import DubboService from "./DubboService";
-//
-// export default class CustomerService extends DubboService {
-//
-//     constructor(version) {
-//         super(version);
-//     }
-//
-// }
-//
-//
+import Service from "../../src/Service";
+
+export default class CustomerService extends Service {
+
+
+}
+
+

@@ -1,6 +1,6 @@
 //测试客户端
 import {connect} from "net";
-import ExBuffer from '../../src/ExBuffer';
+import ExBuffer from '../../src/socket/ExBuffer';
 
 const exBuffer = new ExBuffer();
 let client = connect(8124, 'localhost').on('data', function (data) {

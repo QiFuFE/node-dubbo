@@ -13,7 +13,6 @@ const dependencies = {
     },
 };
 
-
 // opt.java = require('js-to-java');
 
 const Dubbo = new NZD({
@@ -24,7 +23,7 @@ const Dubbo = new NZD({
 }, dependencies)
     .on('init-done', async () => {
         try {
-            for (let i = 0; i < 100; i+=2) {
+            for (let i = 0; i < 100; i += 2) {
                 await (async () => {
                     await Dubbo.Customer.getClueById((10000 + i).toString());
                 })()

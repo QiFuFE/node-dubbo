@@ -31,7 +31,7 @@
 
 2. 1个字节的标志位。低四位用来表示消息体数据用的序列化工具的类型（默认hessian），高四位中，第一位为1表示是request请求，第二位为1表示双向传输（即有返回response），第三位为1表示是心跳ping事件。如: `0b11000010`
 
-3. 1个字节的状态位，消息类型为 `response` 时，设置请求响应状态, 详见 `src/enum/ResponseStatus.ts`
+3. 1个字节的状态位，消息类型为 `response` 时，设置请求响应状态, 详见 [ResponseStatus](../src/enum/ResponseStatus.ts)
 
 4. 8个字节的消息 id , 64位long类型, So, 然而 `node` 里面并不支持.
 

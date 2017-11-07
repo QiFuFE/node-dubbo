@@ -1,11 +1,12 @@
 import {PlatformTools} from "./PlatformTools";
+import Service from "../Service";
 
 /**
  * Loads all exported classes from the given directory.
  */
-export function importClassesFromDirectories(directories: string[], formats = [".js", ".ts"]): Function[] {
+export default function importClassesFromDirectories<T extends Service>(directories: string[], formats = [".js", ".ts"]): T[] {
 
-    function loadFileClasses(exported: any, allLoaded: Function[]) {
+    function loadFileClasses<T extends Service>(exported: any, allLoaded: T[]) {
         if (typeof exported === "function") {
             allLoaded.push(exported);
 

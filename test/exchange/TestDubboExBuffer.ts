@@ -1,5 +1,5 @@
 /*************************基本操作****************************/
-import ExBuffer from "../../src/ExBuffer";
+import ExBuffer from "../../src/socket/ExBuffer";
 
 //构造一个ExBuffer，采用4个字节（uint32无符号整型）表示包长，而且是little endian 字节序
 // var exBuffer = new ExBuffer().uint32Head().littleEndian();

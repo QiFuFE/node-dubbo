@@ -1,5 +1,5 @@
 import {createServer, Socket} from "net";
-import ExBuffer from '../../src/ExBuffer';
+import ExBuffer from '../../src/socket/ExBuffer';
 //测试服务端
 createServer(socket => {
     console.log('client connected');
