@@ -13,12 +13,8 @@ import DubboDecode from './codec/DubboDecode';
 
 const debug = debugFac('node-zookeeper-dubbo:RpcClient');
 
-export interface DecoderCls {
-    isValidCallResult: (bufChunk: Buffer) => number;
-    decode: (msgBuf: Buffer) => DecodedMsg;
-}
-
 export interface DecodedMsg {
+    isHeartBeat: boolean;
     msgId: number;
     payload: any;
 }
@@ -39,25 +35,12 @@ export class RpcClient {
      */
     private msgId = 0;
 
-    /**
-     * 调用的上下文对象
-     * @type {{}}
-     */
-    private context: Map<number, (err: Error, payload: any) => void> = new Map();
 
     /**
-     * 全局唯一的一个socket
-     * @type {Socket}
+     * 连接集合
+     * @type {Map}
      */
     private connections: Map<string, Promise<ReusableSocket>> = new Map();
-
-    /**
-     * todo: 两个状态是否可以根据 socket.conneting 来替代?
-     * @type {boolean}
-     */
-        // private between_close = false;
-
-        // private calling_close = false;
 
     private encoder: DubboEncoder = null;
     private decode: (heap: Buffer) => DecodedMsg = null;
@@ -65,12 +48,6 @@ export class RpcClient {
 
     private keepAlive = false;
     private timeout = 0;
-
-    /**
-     * 当前是否已连接(或正在连接)
-     * @type {boolean}
-     */
-    isAlive = false;
 
     /*
             * 是否保持连接状态，如果为false，则每次socket空闲下来后就会关闭连接
@@ -89,7 +66,6 @@ export class RpcClient {
      * @return {Promise<"net".Socket>}
      */
     private getConnection(host: string, port: number): Promise<ReusableSocket> {
-        //todo: 连接建立中, 同时触发多次初始化?
         let connName = `${host}:${port}`;
         if (this.connections.has(connName)) {
             return this.connections.get(connName);
@@ -115,40 +91,11 @@ export class RpcClient {
         reuseSock.setKeepAlive(this.keepAlive);
         //reuseSock.setTimeout(cur.config.timeout);
         reuseSock.on('inbound', inboundMsg => {
-            this.handleData(inboundMsg);
+            this.handleData(inboundMsg, reuseSock);
         }).on(SocketEvent.CLOSE, () => {
-            // cur.isAlive = false;
             this.connections.delete(`${host}:${port}`);
             debug("socket closed");
-            // if (cur.tmpGetTaskList.length) {
-            //     //刚关闭socket，又来新请求
-            //     cur.tmpGetTaskList.shift()();
-            // }
         });
-
-        // let bufferChunk = Buffer.from([]);
-        // let socket = new Socket();
-        // socket.setKeepAlive(this.keepAlive);
-        //socket.setTimeout(cur.config.timeout);
-        // var errorCall = function (msg) {
-        //Timeout while connection or some connection error
-        // debug(msg);
-        // todo: actually, I don't know which request is error and which cb function I shall call. So call them all.
-        // let cb;
-        // while (cb = this.tmpGetTaskList.shift()) {
-        //     cb(msg);
-        // }
-        // for (let key in this.context) {
-        //     var ctx = cur.context[key];
-        //     if (ctx && typeof(ctx.cb) == "function") {
-        //         ctx.cb(msg);
-        //         cur.context[key] = null;
-        //     }
-        // }
-        //
-        // socket.destroy();
-        // };
-
 
         //连接也有可能会超时阻塞
         return new Promise<ReusableSocket>((resolve, reject) => {
@@ -164,66 +111,18 @@ export class RpcClient {
                 resolve(reuseSock);
             })
                 .on(SocketEvent.ERROR, e => {
-                    debug(`socket err => ${e}`)
-                    // todo: actually, I don't know which request is error and which cb function I shall call. So call them all.
+                    debug(`socket err => ${e}`);
                     if (reuseSock.connecting) {
                         clearTimeout(connectTimer);
                         reject(e);
                     }
+                    // FixMe: 然而并不知道是某个数据包出现了异常, So, 清空上下文, 讲道理, reuseSock 实例应当被辣鸡回收的好伐
+                    reuseSock.context.forEach(cb => cb(e, null));
                     reuseSock.destroy();
                 });
         });
 
 
-        // socket.on(SocketEvent.RECEIVE, data => {
-        //todo: 空 Buffer 或其他参数的处理状况
-
-        // if (!data || !Buffer.isBuffer(data) || data.length <= 0) {
-        //     //error
-        //     debug("buffer error:" + data);
-        //     // errorCall(new Error("receive error, illegal data"));
-        //     socket.end();
-        // } else {
-
-        // bufferChunk = Buffer.concat([bufferChunk, data]);
-        // let packageSize = this.decoder.isValidCallResult(bufferChunk);
-        // if (packageSize) {
-        //     //网络有可能一次返回n个结果包，需要做判断，是不是很bt。。
-        //     var totalSize = bufferChunk.length;
-        //     if (packageSize == totalSize) {
-        //         //只有一个包，这是大多数情况
-        //         this.handleData(bufferChunk);
-        //     }
-        //     else {
-        //         //存在多个包，这里要做一些buffer复制的操作，会消耗一定性能
-        //
-        //         while (true) {
-        //             var buf = bufferChunk.slice(0, packageSize);
-        //             this.handleData(buf);
-        //             bufferChunk = bufferChunk.slice(packageSize, bufferChunk.length);
-        //             packageSize = this.decoder.isValidCallResult(bufferChunk);
-        //
-        //             if (packageSize >= bufferChunk.length) {
-        //                 //last one
-        //                 this.handleData(bufferChunk);
-        //                 break;
-        //             }
-        //             else if (packageSize == 0) {
-        //                 //包还没接收完
-        //                 return;
-        //             }
-        //         }
-        //     }
-        //
-        //     //清空buffer，给下一次请求使用
-        //     bufferChunk = Buffer.from([]);
-        // }
-        // else {
-        //     //没接收完的话继续接收
-        //     //console.log("keep looking");
-        // }
-        // }
-        // })
     }
 
 
@@ -251,28 +150,24 @@ export class RpcClient {
             if (this.timeout) {
                 timer = setTimeout(() => {
                     //返回超时
-                    this.context[msgId] = null;
+                    client.context.delete(msgId);
                     // this.tryCloseSocket(/*client*/);
-                    reject(new Error(`request or decode timeout( ${this.timeout} ms)`));
+                    reject(new Error(`request timeout( ${this.timeout} ms)`));
                 }, this.timeout);
             }
             //保存当前上下文，都是为了并发
-            this.context.set(msgId, (err, paylord) => {
-                debug(`excute call's callback for msg => ${msgId}`);
+            client.context.set(msgId, (err, paylord) => {
+                debug(`remote call's callback for msg => ${msgId}`);
                 clearTimeout(timer);
                 if (err) {
                     return reject(err);
                 }
                 resolve(paylord);
             });
+
             //真正的写socket
-            client.on(SocketEvent.ERROR, err => {
-                if (this.context.has(msgId)) {
-                    clearTimeout(timer);
-                    this.context.delete(msgId);
-                    reject(err);
-                }
-            }).write(buf);
+            // todo: socket 出现异常, 超时 timer 未取消
+            client.write(buf);
         });
     }
 
@@ -281,36 +176,38 @@ export class RpcClient {
      * 处理返回数据，回调
      * @param msgBuf
      */
-    private handleData(msgBuf: Buffer): void {
+    private async handleData(msgBuf: Buffer, client: ReusableSocket): Promise<void> {
         debug(`receive call's response => ${msgBuf.length}`);
         let msgId = 0;
         let payload = null;
         try {
             let decoded = this.decode(msgBuf);
-            msgId = decoded.msgId;
-            payload = decoded.payload;
+            if (decoded.isHeartBeat) {
+                debug(`received heartbeat msgId => ${decoded.msgId}`);
+                client.write(DubboEncoder.encodeHeartBeatEvent(decoded.msgId));
+            } else {
+                msgId = decoded.msgId;
+                payload = decoded.payload;
 
-            if (!this.context.has(msgId)) {
-                //找不到上下文，可能是因为超时，callback已执行，直接放弃当前数据
-                console.log("Can't find context. This should never happened!" + msgId);
-                //socket.destroy();
-                return;
+                if (!client.context.has(msgId)) {
+                    //找不到上下文，可能是因为超时，callback已执行，直接放弃当前数据
+                    console.log("Can't find context. This should never happened!" + msgId);
+                    //socket.destroy();
+                    return;
+                }
+                client.context.get(msgId)(null, payload);
             }
-            this.context.get(msgId)(null, payload);
         } catch (e) {
             if (e instanceof DecodeError || e instanceof RpcError || e instanceof JavaExceptionError) {
-                //todo: 统一封装 RpcError
                 debug(`remote call's response error for msg => ${e.msgId}`);
-                this.context.get(e.msgId)(e, null);
+                client.context.get(e.msgId)(e, null);
             } else {
                 console.error(e);
             }
         }
         if (msgId) {
-            this.context.delete(msgId);
+            client.context.delete(msgId);
         }
-
-        // this.tryCloseSocket(null);//todo : 此处对应的 socket 实例销毁?
 
     }
 

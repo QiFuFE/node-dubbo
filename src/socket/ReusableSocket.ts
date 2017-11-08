@@ -13,6 +13,12 @@ export interface ExBufferOptions {
 export default class ReusableSocket extends Socket {
     private exBuf: ExBuffer;
 
+    /**
+     * 调用的上下文对象
+     * @type {{}}
+     */
+    context: Map<number, (err: Error, payload: any) => void> = new Map();
+
     constructor({headLen, dataLenOffset, endian, bufferLength}: ExBufferOptions = {}, options?: SocketConstructorOpts) {
         super(options);
         this.exBuf = new ExBuffer(headLen, dataLenOffset, endian, bufferLength);

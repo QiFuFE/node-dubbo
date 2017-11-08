@@ -20,7 +20,7 @@ interface NZDOptions {
      * zookeeper服务地址
      */
     register: string;
-    group?: string;
+    // group?: string;
     /**
      * 注册到zookeeper上的根节点名称
      */
@@ -54,7 +54,7 @@ interface Dependent {
     /**
      * 分组
      */
-    group: string;
+    group?: string;
     /**
      * 方法签名
      */
